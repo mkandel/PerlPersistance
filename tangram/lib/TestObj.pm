@@ -11,6 +11,9 @@ use Carp;
 #use FindBin;
 #use lib "$FindBin::Bin/../../lib";
 
+use Tangram;
+use Tangram::Driver::SQLite;
+
 use base qw( Exporter );
 our @EXPORT_OK = qw/ some_funcs to_export /;
 
@@ -75,8 +78,6 @@ sub new {
     my ( $class, $args ) = @_;
     my $self;
 
-    print Dumper $args;
-
     KEY:
     foreach my $k ( keys %{ $args } ){
         if ( $k eq 'allowedAccessors' ){
@@ -85,7 +86,7 @@ sub new {
                 print "Processing accessor: '$v'\n" if $args->{ debug };
                 #next ACCESSOR if ( $v eq 'allowedAccessors' ); ## Do not allow updating of the allowed accessors!!
                 if ( $v eq 'allowedAccessors' ) { ## Do not allow updating of the allowed accessors!!
-                    print "Ignoring '$v'!!\n";
+                    print "Ignoring '$v'!!\n" if $args->{ 'debug' };
                     next ACCESSOR;
                 }
 
@@ -192,7 +193,7 @@ sub AUTOLOAD {
         }
         return $self->{ $call };
     } else {
-        carp "Trying to set a value for an attribute that is not allowed";
+        croak "Trying to set a value for an attribute that is not allowed";
         return undef;
     }
 }

@@ -82,16 +82,40 @@ GetOptions(
 my $prog = $0;
 $prog =~ s/^.*\///;
 
-my $o1 = TestObj->new( { debug => 1, var1 => 'var1', var2 => 'var2' } );
-$o1->blah( 'a' );
-print Dumper $o1;
+my $o1 = TestObj->new( { debug => $debug, var1 => 'var1', var2 => 'var2' } );
+eval {
+    $o1->blah( 'a' );
+};
+if ( $@ ){
+    process_exception( $@ );
+}
+print Dumper $o1 if $debug;
 
 my @accessors = qw{ a b blah allowedAccessors };
 my $o2 = TestObj->new( { debug => $debug, var1 => 'var1', var2 => 'var2', 'allowedAccessors' => \@accessors } );
-$o2->blah( 'a' );
-print Dumper $o2;
-$o2->allowedAccessors( 'a' );
-print Dumper $o2;
+eval {
+    $o2->blah( 'a' );
+};
+if ( $@ ){
+    process_exception( $@ );
+}
+print Dumper $o2 if $debug;
+eval {
+    $o2->allowedAccessors( 'a' );
+};
+if ( $@ ){
+    process_exception( $@ );
+}
+print Dumper $o2 if $debug;
 
+sub process_exception {
+    my $ex = shift;
+    my $exit = shift || undef;
+
+    chomp $ex;
+    print "Caught exception: '$ex'\n" if $debug;
+
+    exit if $exit;
+}
 __END__
 
