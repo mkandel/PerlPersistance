@@ -66,6 +66,8 @@ use Pod::Usage;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+use TestObj;
+
 local $| = 1;
 
 my $debug = 0;
@@ -80,6 +82,16 @@ GetOptions(
 my $prog = $0;
 $prog =~ s/^.*\///;
 
+my $o1 = TestObj->new( { debug => 1, var1 => 'var1', var2 => 'var2' } );
+$o1->blah( 'a' );
+print Dumper $o1;
+
+my @accessors = qw{ a b blah allowedAccessors };
+my $o2 = TestObj->new( { debug => $debug, var1 => 'var1', var2 => 'var2', 'allowedAccessors' => \@accessors } );
+$o2->blah( 'a' );
+print Dumper $o2;
+$o2->allowedAccessors( 'a' );
+print Dumper $o2;
 
 __END__
 

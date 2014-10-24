@@ -6,6 +6,7 @@ package TestObj;
 
 use warnings;
 use strict;
+use Carp;
 
 #use FindBin;
 #use lib "$FindBin::Bin/../../lib";
@@ -73,25 +74,69 @@ new()
 =cut
 
 sub new {
-    return 0;
+    my ( $class, $args ) = @_;
+    my $self;
+
+    print Dumper $args;
+
+    KEY:
+    foreach my $k ( keys %{ $args } ){
+        if ( $k eq 'allowedAccessors' ){
+            ACCESSOR:
+            foreach my $v ( @{ $args->{ $k } } ){
+                print "Processing accessor: '$v'\n" if $args->{ debug };
+                #next ACCESSOR if ( $v eq 'allowedAccessors' ); ## Do not allow updating of the allowed accessors!!
+                if ( $v eq 'allowedAccessors' ) { ## Do not allow updating of the allowed accessors!!
+                    print "Ignoring '$v'!!\n";
+                    next ACCESSOR;
+                }
+
+                push @{ $self->{ 'allowedAccessors' } }, $v;
+            }
+        } else {
+            $self->{ $k } = $args->{ $k };
+        }
+    }
+
+    return bless $self, $class;
 }
 
 =head1 PRIVATE METHODS
 
-_private_func()
+AUTOLOAD() 
 
-    FUNCTION: Brief description of the function
+    FUNCTION: Catch-all for unknown method calls
 
-   ARGUMENTS: Describe Arguments
+   ARGUMENTS: n/a
            
-     RETURNS: Describe return value
+     RETURNS: n/a
 
-       NOTES: Any special notes
+       NOTES: Uses allowedAccessors for automatic getter/setter functionality
 
 =cut
 
-sub _private_func{
-    return 0;
+sub AUTOLOAD {
+    my ( $self, $arg ) = @_;
+
+    our $AUTOLOAD;
+    my $call = $AUTOLOAD;
+    $call =~ s/.*:://;
+
+    if ( $self->{ 'debug' } ) {
+        print "AUTOLOAD: Got argument for '$call': '$arg'\n";
+    }
+
+    if ( grep { $_ eq $call } @{ $self->{ 'allowedAccessors' } } ){
+        ## We are allowed to AUTOLOAD this attribute
+        print "'$call' allowed!!\n" if $self->{ debug };
+        if ( $arg ){
+            $self->{ $call } = $arg;
+        }
+        return $self->{ $call };
+    } else {
+        carp "Trying to set a value for an attribute that is not allowed";
+        return undef;
+    }
 }
 
 =head1 AUTHOR
