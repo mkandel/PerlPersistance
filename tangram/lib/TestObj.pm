@@ -49,9 +49,7 @@ Perhaps a little code snippet.
 
 =head1 DESCRIPTION
 
-Write a quick pitch here.
-
-TestObj solves...
+A better persistent object!!
 
 =cut
 
@@ -61,6 +59,8 @@ NONE
 
 =head1 PUBLIC METHODS
 
+=item
+
 new() 
 
     FUNCTION: Brief description of the function
@@ -68,8 +68,6 @@ new()
    ARGUMENTS: Describe Arguments
            
      RETURNS: Describe return value
-
-       NOTES: Any special notes
 
 =cut
 
@@ -101,7 +99,67 @@ sub new {
     return bless $self, $class;
 }
 
+=item
+
+save() 
+
+    FUNCTION: Saves an object
+
+   ARGUMENTS: none
+           
+     RETURNS: Object identifier, -1 on error
+
+=cut
+
+sub save {
+    my $self = shift;
+
+    my $oid = -1;
+
+    return $oid;
+}
+
+=item
+
+find() 
+
+    FUNCTION: Searches saved objects
+
+   ARGUMENTS: Search criteria
+           
+     RETURNS: Object identifier for matching object(s)
+
+=cut
+
+sub find {
+    my $self = shift;
+    my $oid = -1;
+
+    return $oid;
+}
+
+=item
+
+load() 
+
+    FUNCTION: Load a saved object
+
+   ARGUMENTS: Object identifier
+           
+     RETURNS: saved object or undef if object cannnot be found
+
+=cut
+
+sub load {
+    my $self = shift;
+    my $obj = undef;
+
+    return $obj;
+}
+
 =head1 PRIVATE METHODS
+
+=item
 
 AUTOLOAD() 
 
